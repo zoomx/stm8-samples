@@ -157,15 +157,15 @@ void set_display_buf(char *str){
 		if(ch > '/' && ch < ':'){ // digit
 			M = '0';
 		}else if(ch > '`' & ch < 'g'){ // a..f
-			M = 'a' + 10;
+			M = 'a' - 10;
 		}else if(ch > '@' & ch < 'G'){ // A..F
-			M = 'A' + 10;
+			M = 'A' - 10;
 		}else if(ch == '-'){ // minus
-			M = '-' + 16;
+			M = '-' - 16;
 		}else if(ch == 'h'){ // hex
-			M = 'h' + 17;
+			M = 'h' - 17;
 		}else if(ch == 'H'){ // hex
-			M = 'H' + 17;
+			M = 'H' - 17;
 		}else if(ch == '.'){ // DP, set it to previous char
 			if(i == 0){ // word starts from '.' - make a space with point
 				B[0] = 0xff;
@@ -227,7 +227,7 @@ void display_int(int I){
 	do{
 		rem = I % 10;
 		display_buffer[N] = rem;
-		I -= rem * 10;
+		I /= 10;
 	}while(--N > -1 && I);
 	if(sign < 0 && N > -1) display_buffer[N] = '-';
 }

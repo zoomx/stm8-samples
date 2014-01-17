@@ -24,14 +24,15 @@
 #include "interrupts.h"
 #include "led.h"
 
+#define DIGIT_PER 10
 unsigned long Global_time = 0L; // global time in ms
 int ADC_value = 0; // value of last ADC measurement
-U8 LED_delay = 50; // one digit emitting time
+U8 LED_delay = 1; // one digit emitting time
 
 int main() {
 	unsigned long T_LED = 0L;  // time of last digit update
 	unsigned long T_time = 0L; // timer
-	int i = -999;
+	int i = -1200;
 	// Configure clocking
 	CLK_CKDIVR = 0; // F_HSI = 16MHz, f_CPU = 16MHz
 	// Configure pins
@@ -63,10 +64,10 @@ int main() {
 	show_next_digit(); // show zero
 	// Loop
 	do {
-		if((unsigned int)(Global_time - T_time) > 1000){ // set next timer value
+		if((unsigned int)(Global_time - T_time) > DIGIT_PER){ // set next timer value
 			T_time = Global_time;
 			display_int(i++);
-			if(i > 9999) i = -999;
+			if(i > 9999) i = -1200;
 			// check ADC value to light up DPs proportionaly
 			if(ADC_value > 819) display_DP_at_pos(0); // big value == 4 points
 			if(ADC_value > 614) display_DP_at_pos(1); // less == 3 points
