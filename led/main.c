@@ -36,6 +36,7 @@ int main() {
 	// Configure clocking
 	CLK_CKDIVR = 0; // F_HSI = 16MHz, f_CPU = 16MHz
 	// Configure pins
+	CFG_GCR |= 1; // disable SWIM
 	LED_init();
 	// Configure Timer1
 	// prescaler = f_{in}/f_{tim1} - 1

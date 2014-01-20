@@ -210,7 +210,7 @@ void show_next_digit(){
  */
 void display_int(int I){
 	int rem;
-	char N = 3, sign = 1;
+	char N = 3, sign = 0;
 	if(I < -999 || I > 9999){
 		set_display_buf("---E");
 		return;
@@ -221,7 +221,7 @@ void display_int(int I){
 		return;
 	}
 	if(I < 0){
-		sign = -1;
+		sign = 1;
 		I *= -1;
 	}
 	do{
@@ -229,7 +229,7 @@ void display_int(int I){
 		display_buffer[N] = rem;
 		I /= 10;
 	}while(--N > -1 && I);
-	if(sign < 0 && N > -1) display_buffer[N] = '-';
+	if(sign && N > -1) display_buffer[N] = 16; // minus sign
 }
 
 

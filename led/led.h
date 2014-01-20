@@ -21,9 +21,7 @@
 #pragma once
 #ifndef __LED_H__
 #define __LED_H__
-
-typedef unsigned char U8;
-#define NULL (void*)0
+#include "stm8l.h"
 
 void set_display_buf(char *str);
 void show_buf_digit(U8 N);
