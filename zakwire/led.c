@@ -95,23 +95,24 @@ static U8 PC_bits[18] = {40,232,48,160,224,160,32,232,32,160,96,32,56,32,48,112,
  */
 void write_letter(U8 ltr){
 	U8 L = ltr & 0x7f;
-	PD_ODR = 0; // turn off digits 1..3
+	// first turn all off
+	PA_ODR &= ~GPIO_PIN3; // turn off 1st letter
+	PD_ODR &= ~(GPIO_PIN1|GPIO_PIN4|GPIO_PIN6); // turn off other letters
+	PA_ODR &= ~PA_BLANK;
+	PB_ODR &= ~PB_BLANK;
+	PC_ODR &= ~PC_BLANK;
 	if(L < 18){ // letter
-		PA_ODR = PA_bits[L];
-		PB_ODR = PB_bits[L];
-		PC_ODR = PC_bits[L];
-	}else{ // space
-		PA_ODR = PA_BLANK;
-		PB_ODR = PB_BLANK;
-		PC_ODR = PC_BLANK;
+		PA_ODR |= PA_bits[L];
+		PB_ODR |= PB_bits[L];
+		PC_ODR |= PC_bits[L];
 	}
 	if(ltr & 0x80){ // DP
-		PC_ODR ^= 0x20;
+		PC_ODR &= ~GPIO_PIN5;
 	}
 }
 
 /**
- * Turn on anode power for digit N (0..3: PA3, PD6, PD4, PD1 -- A0x08, D0x40, D0x10, D0x02)
+ * Turn on/off anode power for digit N (0..3: PA3, PD6, PD4, PD1 -- A0x08, D0x40, D0x10, D0x02)
  * @param N - number of digit (0..3), if other - no action (display off)
  * @return
  */
@@ -157,15 +158,15 @@ void set_display_buf(char *str){
 		if(ch > '/' && ch < ':'){ // digit
 			M = '0';
 		}else if(ch > '`' & ch < 'g'){ // a..f
-			M = 'a' + 10;
+			M = 'a' - 10;
 		}else if(ch > '@' & ch < 'G'){ // A..F
-			M = 'A' + 10;
+			M = 'A' - 10;
 		}else if(ch == '-'){ // minus
-			M = '-' + 16;
+			M = '-' - 16;
 		}else if(ch == 'h'){ // hex
-			M = 'h' + 17;
+			M = 'h' - 17;
 		}else if(ch == 'H'){ // hex
-			M = 'H' + 17;
+			M = 'H' - 17;
 		}else if(ch == '.'){ // DP, set it to previous char
 			if(i == 0){ // word starts from '.' - make a space with point
 				B[0] = 0xff;
@@ -205,12 +206,22 @@ void show_next_digit(){
 }
 
 /**
+ * Turn off current digit: to change display brightness
+ */
+void lights_off(){
+	U8 N;
+	if(N_current) N = N_current - 1;
+	else N = 3;
+	light_up_digit(N);
+}
+
+/**
  * convert integer value i into string and display it
  * @param i - value to display, -999 <= i <= 9999, if wrong, displays "---E"
  */
 void display_int(int I){
 	int rem;
-	char N = 3, sign = 1;
+	char N = 3, sign = 0;
 	if(I < -999 || I > 9999){
 		set_display_buf("---E");
 		return;
@@ -221,16 +232,17 @@ void display_int(int I){
 		return;
 	}
 	if(I < 0){
-		sign = -1;
+		sign = 1;
 		I *= -1;
 	}
 	do{
 		rem = I % 10;
 		display_buffer[N] = rem;
-		I -= rem * 10;
+		I /= 10;
 	}while(--N > -1 && I);
-	if(sign < 0 && N > -1) display_buffer[N] = '-';
+	if(sign && N > -1) display_buffer[N] = 16; // minus sign
 }
+
 
 
 /**

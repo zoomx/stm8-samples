@@ -27,6 +27,7 @@ extern int Temperature_value; // T*10, in degrC
 extern U8 ZW_data_ready;
 extern U8 temp_measurement;
 void ZW_on();
+void ZW_off();
 void ZW_catch_bit();
 
 

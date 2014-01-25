@@ -27,6 +27,7 @@
 void set_display_buf(char *str);
 void show_buf_digit(U8 N);
 void show_next_digit();
+void lights_off();
 void display_int(int i);
 void display_DP_at_pos(U8 i);
 

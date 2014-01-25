@@ -92,12 +92,25 @@ INTERRUPT_HANDLER(TIM5_CAP_COM_IRQHandler, 14){}
 INTERRUPT_HANDLER(TIM2_UPD_OVF_BRK_IRQHandler, 13){}
 
 // Timer2 Capture/Compare Interrupt
+// store the current counter value and wait for next pulse
 INTERRUPT_HANDLER(TIM2_CAP_COM_IRQHandler, 14){
-	// store the current counter value and wait for next pulse
-	if(TIM2_SR1 & TIM_SR1_CC2IF){
-		TIM2_SR1 = 0; // clear all int flags
-		ZW_catch_bit();
+	TIM2_CR1 = 0; // stop timer
+	if(TIM2_SR2){ // overcapture: noice etc.
+		TIM2_SR2 = 0;
+		ZW_off();
+		return;
 	}
+	if(TIM2_SR1 & TIM_SR1_CC2IF){ // CC2 (1->0) - time since last 1->0
+		// zero counters & start timer to catch bit
+		TIM2_CNTRH = 0;
+		TIM2_CNTRL = 0;
+		TIM2_CR1 =  TIM_CR1_OPM | TIM_CR1_CEN;
+	}else if(TIM2_SR1 & TIM_SR1_CC1IF){ // CC1 (0->1) - zero pulse length
+		ZW_catch_bit();
+	}else{ // other interrupts (overflow?)
+		ZW_off();
+	}
+	TIM2_SR1 = 0;
 }
 #endif // STM8S903
 
@@ -144,10 +157,9 @@ INTERRUPT_HANDLER(ADC2_IRQHandler, 22){}
 #else
 // ADC1 interrupt
 INTERRUPT_HANDLER(ADC1_IRQHandler, 22){
-/*	ADC_value = ADC_DRL; // in right-alignment mode we should first read LSB
+	ADC_value = ADC_DRL; // in right-alignment mode we should first read LSB
 	ADC_value |= ADC_DRH << 8;
 	ADC_CSR &= 0x3f; // clear EOC & AWD flags
-	*/
 }
 #endif // STM8S208 or STM8S207 or STM8AF52Ax or STM8AF62Ax
 

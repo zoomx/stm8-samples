@@ -25,7 +25,7 @@
 #include "stm8l.h"
 
 extern unsigned long Global_time; // global time in ms
-//extern int ADC_value; // value of last ADC measurement
+extern int ADC_value; // value of last ADC measurement
 
 // Top Level Interrupt
 INTERRUPT_DEFINITION(TLI_IRQHandler, 0);

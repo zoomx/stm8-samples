@@ -1,5 +1,5 @@
 /*
- * blinky.c
+ * main.c
  *
  * Copyright 2014 Edward V. Emelianoff <eddy@sao.ru>
  *

@@ -22,6 +22,7 @@
 #include "stm8l.h"
 #include "zacwire.h"
 #include "interrupts.h"
+#include "led.h"
 
 int Temperature_value = 0;     // measurement result
 U8 ZW_data_ready = 0;          // flag - measurement is ready
@@ -35,26 +36,43 @@ U8 temp_measurement = 0;       // flag - temperature measurement in progress
 void ZW_on(){
 	ZW_result = 0;
 	bit_cntr = 0;
-	PA_ODR = GPIO_PIN2; // power on zacwire sensor
+	PA_ODR |= GPIO_PIN2; // power on zacwire sensor
 	ZW_data_ready = 0;
 	temp_measurement = 1;
-	// Timer2: one-pulse mode + enable
-	TIM2_CR1 = TIM_CR1_OPM | TIM_CR1_CEN;
+	// Clear TIM2 counters value
+	TIM2_CNTRH = 0;
+	TIM2_CNTRL = 0;
+	// make first run without OPM: pause mayby up to 85ms!
+	TIM2_CR1 =  TIM_CR1_CEN;
+//	TIM2_CR1 =  TIM_CR1_OPM | TIM_CR1_CEN; // one-pulse mode + enable
+//	TIM2_CR1 = TIM_CR1_APRE | TIM_CR1_OPM | TIM_CR1_CEN;
 }
 
 /**
  * Turn off Zacwire
  */
 void ZW_off(){
+	TIM2_CR1 &= ~TIM_CR1_CEN;
 	temp_measurement = 0;
-	PA_ODR ^= GPIO_PIN2; // turn off ZW
+	PA_ODR &= ~GPIO_PIN2; // turn off ZW
 }
 
 /**
  * Get bit value
+ * TIM2_CCR1H & TIM2_CCR1L is zero pulse length
+ * TIM2_CCR2H & TIM2_CCR2L is time (for previous counter run) since timer up till 1->0 transition
  */
 void ZW_catch_bit(){
-	long temper;
+	if(bit_cntr++ == 7){
+		Temperature_value = TIM2_CCR1H;
+		if(!Temperature_value)
+			Temperature_value = -TIM2_CCR1L;
+		ZW_data_ready = 1;
+		ZW_off();
+	}else
+		TIM2_CR1 =  TIM_CR1_OPM | TIM_CR1_CEN;
+	return;
+	/*long temper;
 	// value of TIM2 CC2 (pulse width in us)
 	U16 TIM2_cc_value = TIM2_CCR2H << 8 | TIM2_CCR2L;
 	if(bit_cntr == 8){ // omit CRC bit
@@ -87,5 +105,6 @@ void ZW_catch_bit(){
 	bit_cntr++;
 	ZW_result <<= 1; // prepare to fill next bit
 restart_timer:
-	TIM2_CR1 = TIM_CR1_OPM | TIM_CR1_CEN; // turn on timer
+	TIM2_CR1 = TIM_CR1_APRE | TIM_CR1_OPM | TIM_CR1_CEN; // turn on timer
+	*/
 }
