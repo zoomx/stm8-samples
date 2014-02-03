@@ -96,15 +96,18 @@ static U8 PC_bits[18] = {40,232,48,160,224,160,32,232,32,160,96,32,56,32,48,112,
 void write_letter(U8 ltr){
 	U8 L = ltr & 0x7f;
 	// first turn all off
-	PA_ODR &= ~GPIO_PIN3; // turn off 1st letter
 	PD_ODR &= ~(GPIO_PIN1|GPIO_PIN4|GPIO_PIN6); // turn off other letters
-	PA_ODR &= ~PA_BLANK;
+	PA_ODR &= ~(PA_BLANK | GPIO_PIN3); // light up everything
 	PB_ODR &= ~PB_BLANK;
 	PC_ODR &= ~PC_BLANK;
 	if(L < 18){ // letter
 		PA_ODR |= PA_bits[L];
 		PB_ODR |= PB_bits[L];
 		PC_ODR |= PC_bits[L];
+	}else{ // space - turn all OFF
+		PA_ODR |= PA_BLANK;
+		PB_ODR |= PB_BLANK;
+		PC_ODR |= PC_BLANK;
 	}
 	if(ltr & 0x80){ // DP
 		PC_ODR &= ~GPIO_PIN5;
@@ -112,7 +115,7 @@ void write_letter(U8 ltr){
 }
 
 /**
- * Turn on/off anode power for digit N (0..3: PA3, PD6, PD4, PD1 -- A0x08, D0x40, D0x10, D0x02)
+ * Turn on anode power for digit N (0..3: PA3, PD6, PD4, PD1 -- A0x08, D0x40, D0x10, D0x02)
  * @param N - number of digit (0..3), if other - no action (display off)
  * @return
  */

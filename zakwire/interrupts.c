@@ -43,11 +43,12 @@ INTERRUPT_HANDLER(EXTI_PORTC_IRQHandler, 5){}
 
 // External Interrupt PORTD
 INTERRUPT_HANDLER(EXTI_PORTD_IRQHandler, 6){
-/*	if((PD_IDR & GPIO_PIN3) == 0){ // next bit start
-		// start measurement of bit: timer 2
-	}else{
-		ZW_catch_bit(); // capture bit value
-	};*/
+	if((PD_IDR & GPIO_PIN3) == 0){ // next bit start
+	//	TIM2_SR1 = 0;
+	//	TIM2_CR1 = TIM_CR1_OPM | TIM_CR1_CEN;
+		PD_CR2 &= ~GPIO_PIN3;
+		ZW_catch_bit();
+	};
 }
 
 // External Interrupt PORTE
@@ -94,24 +95,24 @@ INTERRUPT_HANDLER(TIM2_UPD_OVF_BRK_IRQHandler, 13){}
 // Timer2 Capture/Compare Interrupt
 // store the current counter value and wait for next pulse
 INTERRUPT_HANDLER(TIM2_CAP_COM_IRQHandler, 14){
+	/*
 	TIM2_CR1 = 0; // stop timer
 	if(TIM2_SR2){ // overcapture: noice etc.
 		TIM2_SR2 = 0;
+		TIM2_SR1 = 0;
 		ZW_off();
 		return;
 	}
-	if(TIM2_SR1 & TIM_SR1_CC2IF){ // CC2 (1->0) - time since last 1->0
-		// zero counters & start timer to catch bit
-		TIM2_CNTRH = 0;
-		TIM2_CNTRL = 0;
-		TIM2_CR1 =  TIM_CR1_OPM | TIM_CR1_CEN;
-	}else if(TIM2_SR1 & TIM_SR1_CC1IF){ // CC1 (0->1) - zero pulse length
-		ZW_catch_bit();
-	}else{ // other interrupts (overflow?)
-		ZW_off();
-	}
+	ZW_catch_bit();
 	TIM2_SR1 = 0;
+	TIM2_CNTRH = 0;
+	TIM2_CNTRL = 0;
+	*/
 }
+/*
+	TIM2_CCMR2 = 1; // IC2 is mapped on TI2FP2
+	TIM2_CCMR1 = 2; // IC1 is mapped on TI2FP1
+*/
 #endif // STM8S903
 
 #if defined (STM8S208) || defined(STM8S207) || defined(STM8S007) || defined(STM8S105) || \

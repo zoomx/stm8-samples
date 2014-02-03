@@ -296,5 +296,7 @@ typedef unsigned int U16;
 #define EXTI_CR2	*(unsigned char*)0x50A1
 #define INTERRUPT_HANDLER(fn, num)		void fn() __interrupt(num)
 #define INTERRUPT_DEFINITION(fn, num)	extern void fn() __interrupt(num)
+// CCR REGISTER: bits 3&5 should be 1 if you wanna change EXTI_CRx
+#define CCR			*(unsigned char*)0x7F0A
 
 #endif // __STM8L_H__
