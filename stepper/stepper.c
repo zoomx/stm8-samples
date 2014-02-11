@@ -23,7 +23,7 @@
 #include "stepper.h"
 
 U8 Ustepping = 4;          // 2^Ustepping = N of microsteps
-long Nsteps = 0;           // Number of steps
+volatile long Nsteps = 0;           // Number of steps
 U8 Motor_number = 5;       // Number of motor to move, 5 -- not moving
 U16 Stepper_speed = 0;     // length of one MICROstep in us
 
@@ -65,18 +65,19 @@ void set_stepper_speed(U16 SpS){
 }
 
 void move_motor(int Steps){
+	if(Motor_number > 4) return;
 	if(Steps < 0){
 		PORT(STP_DIR_PORT, ODR) &= ~STP_DIR_PIN; // dir to left
 		Steps *= -1;
 	}
 	Nsteps = (long)Steps << Ustepping;
-	PORT(STP_EN_PORT, ODR) ^= STP_EN_MASK & Motor_number; // enable moving
+	PORT(STP_EN_PORT, ODR) |= 1 << Motor_number; // enable moving
 	TIM2_CR1 |= TIM_CR1_CEN; // turn on timer
 }
 
 void stop_motor(){
 	TIM2_CR1 &= ~TIM_CR1_CEN; // Turn off timer
-	PORT(STP_EN_PORT, ODR) |= STP_EN_MASK; // disable moving
+	PORT(STP_EN_PORT, ODR)  &= ~STP_EN_MASK; // disable moving
 	PORT(STP_DIR_PORT, ODR) |= STP_DIR_PIN; // turn off DIR
 	Nsteps = 0;
 	Motor_number = 5; // All OK. Motors are stopped
@@ -103,8 +104,8 @@ void add_steps(int Steps){
 		move_motor(Steps);
 		return;
 	}
-	if((PORT(STP_DIR_PORT, IDR) & STP_DIR_PIN) == 0) // left direction
-		Nsteps *= -1L;
+//	if(PORT(STP_DIR_PORT, IDR) & STP_DIR_PIN) // left direction
+//		Nsteps *= -1L;
 	if(Steps < 0){
 		sign = 1;
 		Steps *= -1;
@@ -115,10 +116,10 @@ void add_steps(int Steps){
 	Nsteps += S;
 	// now change direction
 	if(Nsteps < 0){
-		PORT(STP_DIR_PORT, ODR) &= ~STP_DIR_PIN; // dir to left
+		uart_write("reverce\n");
+		PORT(STP_DIR_PORT, ODR) ^= STP_DIR_PIN; // go to the opposite side
 		Nsteps *= -1L;
-	}else
-		PORT(STP_DIR_PORT, ODR) |= STP_DIR_PIN; // dir to the right
+	}
 	// resume
 	TIM2_CR1 |= TIM_CR1_CEN;
 }

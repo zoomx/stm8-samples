@@ -27,7 +27,7 @@
 #include "main.h"
 
 extern U8 Ustepping;
-extern long Nsteps;
+extern volatile  long Nsteps;
 extern U8 Motor_number;
 extern U16 Stepper_speed;
 
