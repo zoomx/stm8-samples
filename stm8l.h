@@ -81,6 +81,26 @@ typedef unsigned int U16;
 #define PF_CR1 *(unsigned char*)0x501C
 #define PF_CR2 *(unsigned char*)0x501D
 
+#ifdef STM8S105
+#define PG_ODR *(unsigned char*)0x501E
+#define PG_IDR *(unsigned char*)0x501F
+#define PG_DDR *(unsigned char*)0x5020
+#define PG_CR1 *(unsigned char*)0x5021
+#define PG_CR2 *(unsigned char*)0x5022
+
+#define PH_ODR *(unsigned char*)0x5023
+#define PH_IDR *(unsigned char*)0x5024
+#define PH_DDR *(unsigned char*)0x5025
+#define PH_CR1 *(unsigned char*)0x5026
+#define PH_CR2 *(unsigned char*)0x5027
+
+#define PI_ODR *(unsigned char*)0x5028
+#define PI_IDR *(unsigned char*)0x5029
+#define PI_DDR *(unsigned char*)0x502A
+#define PI_CR1 *(unsigned char*)0x502B
+#define PI_CR2 *(unsigned char*)0x502C
+#endif // STM8S105
+
 /* GPIO bits */
 #define GPIO_PIN0		(1 << 0)
 #define GPIO_PIN1		(1 << 1)
@@ -109,6 +129,7 @@ typedef unsigned int U16;
 
 
 /* ------------------- UART ------------------- */
+#ifdef STM8S003
 #define UART1_SR	*(unsigned char*)0x5230
 #define UART1_DR	*(unsigned char*)0x5231
 #define UART1_BRR1	*(unsigned char*)0x5232
@@ -120,6 +141,21 @@ typedef unsigned int U16;
 #define UART1_CR5	*(unsigned char*)0x5238
 #define UART1_GTR	*(unsigned char*)0x5239
 #define UART1_PSCR	*(unsigned char*)0x523A
+#endif // STM8S003
+#ifdef STM8S105
+#define UART2_SR	*(unsigned char*)0x5240
+#define UART2_DR	*(unsigned char*)0x5241
+#define UART2_BRR1	*(unsigned char*)0x5242
+#define UART2_BRR2	*(unsigned char*)0x5243
+#define UART2_CR1	*(unsigned char*)0x5244
+#define UART2_CR2	*(unsigned char*)0x5245
+#define UART2_CR3	*(unsigned char*)0x5246
+#define UART2_CR4	*(unsigned char*)0x5247
+#define UART2_CR5	*(unsigned char*)0x5248
+#define UART2_CR6	*(unsigned char*)0x5249
+#define UART2_GTR	*(unsigned char*)0x524A
+#define UART2_PSCR	*(unsigned char*)0x524B
+#endif // STM8S105
 
 /* UART_CR1 bits */
 #define UART_CR1_R8 (1 << 7)
@@ -142,13 +178,13 @@ typedef unsigned int U16;
 #define UART_CR2_SBK (1 << 0)
 
 /* USART_CR3 bits */
-#define USART_CR3_LINEN (1 << 6)
-#define USART_CR3_STOP2 (1 << 5)
-#define USART_CR3_STOP1 (1 << 4)
-#define USART_CR3_CLKEN (1 << 3)
-#define USART_CR3_CPOL (1 << 2)
-#define USART_CR3_CPHA (1 << 1)
-#define USART_CR3_LBCL (1 << 0)
+#define UART_CR3_LINEN (1 << 6)
+#define UART_CR3_STOP2 (1 << 5)
+#define UART_CR3_STOP1 (1 << 4)
+#define UART_CR3_CLKEN (1 << 3)
+#define UART_CR3_CPOL (1 << 2)
+#define UART_CR3_CPHA (1 << 1)
+#define UART_CR3_LBCL (1 << 0)
 
 /* UART_SR bits */
 #define UART_SR_TXE (1 << 7)
@@ -229,26 +265,26 @@ typedef unsigned int U16;
 
 /* TIM2 */
 #define TIM2_CR1	*(unsigned char*)0x5300
-#define TIM2_IER	*(unsigned char*)0x5303
-#define TIM2_SR1	*(unsigned char*)0x5304
-#define TIM2_SR2	*(unsigned char*)0x5305
-#define TIM2_EGR	*(unsigned char*)0x5306
-#define TIM2_CCMR1	*(unsigned char*)0x5307
-#define TIM2_CCMR2	*(unsigned char*)0x5308
-#define TIM2_CCMR3	*(unsigned char*)0x5309
-#define TIM2_CCER1	*(unsigned char*)0x530A
-#define TIM2_CCER2	*(unsigned char*)0x530B
-#define TIM2_CNTRH	*(unsigned char*)0x530C
-#define TIM2_CNTRL	*(unsigned char*)0x530D
-#define TIM2_PSCR	*(unsigned char*)0x530E
-#define TIM2_ARRH	*(unsigned char*)0x530F
-#define TIM2_ARRL	*(unsigned char*)0x5310
-#define TIM2_CCR1H	*(unsigned char*)0x5311
-#define TIM2_CCR1L	*(unsigned char*)0x5312
-#define TIM2_CCR2H	*(unsigned char*)0x5313
-#define TIM2_CCR2L	*(unsigned char*)0x5314
-#define TIM2_CCR3H	*(unsigned char*)0x5315
-#define TIM2_CCR3L	*(unsigned char*)0x5316
+#define TIM2_IER	*(unsigned char*)0x5301
+#define TIM2_SR1	*(unsigned char*)0x5302
+#define TIM2_SR2	*(unsigned char*)0x5303
+#define TIM2_EGR	*(unsigned char*)0x5304
+#define TIM2_CCMR1	*(unsigned char*)0x5305
+#define TIM2_CCMR2	*(unsigned char*)0x5306
+#define TIM2_CCMR3	*(unsigned char*)0x5307
+#define TIM2_CCER1	*(unsigned char*)0x5308
+#define TIM2_CCER2	*(unsigned char*)0x5309
+#define TIM2_CNTRH	*(unsigned char*)0x530A
+#define TIM2_CNTRL	*(unsigned char*)0x530B
+#define TIM2_PSCR	*(unsigned char*)0x530C
+#define TIM2_ARRH	*(unsigned char*)0x530D
+#define TIM2_ARRL	*(unsigned char*)0x530E
+#define TIM2_CCR1H	*(unsigned char*)0x530F
+#define TIM2_CCR1L	*(unsigned char*)0x5310
+#define TIM2_CCR2H	*(unsigned char*)0x5311
+#define TIM2_CCR2L	*(unsigned char*)0x5312
+#define TIM2_CCR3H	*(unsigned char*)0x5313
+#define TIM2_CCR3L	*(unsigned char*)0x5314
 
 /* ------------------- ADC ------------------- */
 #define ADC_DB0RH	*(unsigned char*)0x53E0
