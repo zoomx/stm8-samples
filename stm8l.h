@@ -286,6 +286,34 @@ typedef unsigned int U16;
 #define TIM2_CCR3H	*(unsigned char*)0x5313
 #define TIM2_CCR3L	*(unsigned char*)0x5314
 
+/* TIM3 */
+#define TIM3_CR1	*(unsigned char*)0x5320
+#define TIM3_IER	*(unsigned char*)0x5321
+#define TIM3_SR1	*(unsigned char*)0x5322
+#define TIM3_SR2	*(unsigned char*)0x5323
+#define TIM3_EGR	*(unsigned char*)0x5324
+#define TIM3_CCMR1	*(unsigned char*)0x5325
+#define TIM3_CCMR2	*(unsigned char*)0x5326
+#define TIM3_CCER1	*(unsigned char*)0x5327
+#define TIM3_CNTRH	*(unsigned char*)0x5328
+#define TIM3_CNTRL	*(unsigned char*)0x5329
+#define TIM3_PSCR	*(unsigned char*)0x532A
+#define TIM3_ARRH	*(unsigned char*)0x532B
+#define TIM3_ARRL	*(unsigned char*)0x532C
+#define TIM3_CCR1H	*(unsigned char*)0x532D
+#define TIM3_CCR1L	*(unsigned char*)0x532E
+#define TIM3_CCR2H	*(unsigned char*)0x532F
+#define TIM3_CCR2L	*(unsigned char*)0x5330
+
+/* TIM4 */
+#define TIM4_CR1	*(unsigned char*)0x5340
+#define TIM4_IER	*(unsigned char*)0x5341
+#define TIM4_SR		*(unsigned char*)0x5342
+#define TIM4_EGR	*(unsigned char*)0x5343
+#define TIM4_CNTR	*(unsigned char*)0x5344
+#define TIM4_PSCR	*(unsigned char*)0x5345
+#define TIM4_ARR	*(unsigned char*)0x5346
+
 /* ------------------- ADC ------------------- */
 #define ADC_DB0RH	*(unsigned char*)0x53E0
 #define ADC_DB0RL	*(unsigned char*)0x53E1
