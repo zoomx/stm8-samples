@@ -222,7 +222,7 @@ int main() {
 	// Loop
 	do {
 		// ADC_value sets half-period in ms
-		if(Global_time - T > (long)ADC_value){
+		if((Global_time - T > (long)ADC_value) || (T > Global_time)){
 			T = Global_time;
 			if(onboard_blink) PD_ODR ^= GPIO_PIN3; // blink on-board LED
 			PC_ODR = (LedCntr++) << 3;

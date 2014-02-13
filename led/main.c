@@ -65,7 +65,7 @@ int main() {
 	show_next_digit(); // show zero
 	// Loop
 	do {
-		if((unsigned int)(Global_time - T_time) > DIGIT_PER){ // set next timer value
+		if(((unsigned int)(Global_time - T_time) > DIGIT_PER) || (T_time > Global_time)){ // set next timer value
 			T_time = Global_time;
 			display_int(i++);
 			if(i > 9999) i = -1200;

@@ -327,7 +327,7 @@ int main() {
 
 	// Loop
 	do{
-		if(Global_time - T > paused_val){
+		if((Global_time - T > paused_val) || (T > Global_time)){
 			T = Global_time;
 			PORT(LED_PORT, ODR) ^= LED_PIN; // blink on-board LED
 		}

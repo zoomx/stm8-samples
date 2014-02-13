@@ -90,7 +90,7 @@ int main() {
 	show_next_digit();
 	// Loop
 	do {
-		if((unsigned int)(Global_time - T_time) > 1000){ // once per 3 seconds we start measurement
+		if(((unsigned int)(Global_time - T_time) > 1000) || (T_time > Global_time)){ // once per 3 seconds we start measurement
 			T_time = Global_time;
 			if(ZW_data_ready){ // measurement is ready - display results
 				ZW_data_ready = 0;

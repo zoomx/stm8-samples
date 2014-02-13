@@ -120,6 +120,7 @@ void add_steps(int Steps){
 		PORT(STP_DIR_PORT, ODR) ^= STP_DIR_PIN; // go to the opposite side
 		Nsteps *= -1L;
 	}
-	// resume
-	TIM2_CR1 |= TIM_CR1_CEN;
+	// resume if Nsteps != 0
+	if(Nsteps)
+		TIM2_CR1 |= TIM_CR1_CEN;
 }
