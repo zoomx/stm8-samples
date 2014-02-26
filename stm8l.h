@@ -355,6 +355,35 @@ typedef unsigned int U16;
 /* ------------------- swim control ------------------- */
 #define CFG_GCR		*(unsigned char*)0x7F60
 
+/* -------------------- UNIQUE ID -------------------- */
+#if defined STM8S105 || defined STM8S103 // maybe some other MCU have this too???
+#define U_ID00		(unsigned char*)0x48CD
+#define U_ID01		(unsigned char*)0x48CE
+#define U_ID02		(unsigned char*)0x48CF
+#define U_ID03		(unsigned char*)0x48D0
+#define U_ID04		(unsigned char*)0x48D1
+#define U_ID05		(unsigned char*)0x48D2
+#define U_ID06		(unsigned char*)0x48D3
+#define U_ID07		(unsigned char*)0x48D4
+#define U_ID08		(unsigned char*)0x48D5
+#define U_ID09		(unsigned char*)0x48D6
+#define U_ID10		(unsigned char*)0x48D7
+#define U_ID11		(unsigned char*)0x48D8
+#endif // defined STM8S105 || defined STM8S103
+
+/* -------------------- FLASH/EEPROM -------------------- */
+#define FLASH_CR1	*(unsigned char*)0x505A
+#define FLASH_CR2	*(unsigned char*)0x505B
+#define FLASH_NCR2	*(unsigned char*)0x505C
+#define FLASH_FPR	*(unsigned char*)0x505D
+#define FLASH_NFPR	*(unsigned char*)0x505E
+#define FLASH_IAPSR	*(unsigned char*)0x505F
+#define FLASH_PUKR	*(unsigned char*)0x5062 // progmem unprotection
+#define FLASH_DUKR	*(unsigned char*)0x5064 // EEPROM unprotection
+
+#define EEPROM_KEY1		0xAE  // keys to manage EEPROM's write access
+#define EEPROM_KEY2		0x56
+
 /* ------------------- interrupts ------------------- */
 #define EXTI_CR1	*(unsigned char*)0x50A0
 #define EXTI_CR2	*(unsigned char*)0x50A1

@@ -2,7 +2,7 @@ NAME=testproj
 SDCC=sdcc
 HEX2BIN=hex2bin
 
-CCFLAGS=-DSTM8S003 -I/usr/share/sdcc/include -mstm8 --out-fmt-ihx
+CCFLAGS=-DSTM8S003 -I../  -I/usr/share/sdcc/include -mstm8 --out-fmt-ihx
 LDFLAGS= -mstm8 --out-fmt-ihx
 FLASHFLAGS=-cstlinkv2 -pstm8s003
 
@@ -11,17 +11,15 @@ SRC=$(wildcard *.c)
 OBJ=$(SRC:%.c=%.rel)
 TRASH=$(OBJ) $(SRC:%.c=%.rst) $(SRC:%.c=%.asm) $(SRC:%.c=%.lst)
 TRASH+=$(SRC:%.c=%.sym) $(NAME).ihx $(NAME).lk $(NAME).map
-INDEPENDENT_HEADERS=stm8l.h
+INDEPENDENT_HEADERS=../stm8l.h Makefile
 
-.PHONY: all
+all: $(NAME).bin
 
-all: $(NAME).bin Makefile
-
-$(SRC) : %.c : $(INDEPENDENT_HEADERS)
+$(SRC) : %.c : %.h $(INDEPENDENT_HEADERS)
 	@touch $@
+	@echo $@
 
-%.c: %.h
-	@touch $@
+%.h: ;
 
 clean:
 	rm -f $(TRASH)
@@ -38,4 +36,4 @@ $(NAME).ihx: $(OBJ)
 $(NAME).bin: $(NAME).ihx
 	$(HEX2BIN) -p 00 $<
 
-%.h: ;
+.PHONY: all
