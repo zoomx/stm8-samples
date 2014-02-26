@@ -59,19 +59,21 @@ const U8 UART_devNUM = THIS_DEVICE_NUM; // device number, master sais it
  * @param byte - data to send
  */
 void UART_send_byte(U8 byte){
-	UART2_CR2 |= UART_CR2_TEN; // enable transmitter
+	if(!UART_is_our) return; // don't use UART when we have no right!
+	//UART2_CR2 |= UART_CR2_TEN; // enable transmitter
 	UART2_DR = byte;
 	while(!(UART2_SR & UART_SR_TC));
-	UART2_CR2 &= ~UART_CR2_TEN; // disable transmitter
+	//UART2_CR2 &= ~UART_CR2_TEN; // disable transmitter
 }
 
 void uart_write(char *str){
-	UART2_CR2 |= UART_CR2_TEN; // enable transmitter
+	if(!UART_is_our) return; // don't use UART when we have no right!
+	//UART2_CR2 |= UART_CR2_TEN; // enable transmitter
 	while(*str){
 		UART2_DR = *str++;
 		while(!(UART2_SR & UART_SR_TC));
 	}
-	UART2_CR2 &= ~UART_CR2_TEN; // disable transmitter
+	//UART2_CR2 &= ~UART_CR2_TEN; // disable transmitter
 }
 
 
@@ -174,7 +176,7 @@ void error_msg(char *msg){
  */
 U8 get_motor_number(U8 *N){
 	int Ival;
-	if(readInt(&Ival) && Ival > -1 && Ival < 4){
+	if(readInt(&Ival) && Ival > -1 && Ival < 3){
 		*N = (U8) Ival;
 		UART_send_byte('*'); // OK
 		return 1;
@@ -257,11 +259,11 @@ int main() {
 	UART2_CR1  = UART_CR1_M; // M = 1 -- 9bits
 	UART2_CR2  = UART_CR2_REN | UART_CR2_RIEN; // Allow RX, generate ints on rx
 
-	// enable all interrupts
-	enableInterrupts();
-
 	setup_stepper_pins();
 
+
+	// enable all interrupts
+	enableInterrupts();
 	// Loop
 	do{
 		if((Global_time - T > paused_val) || (T > Global_time)){
@@ -272,7 +274,19 @@ int main() {
 			switch(rb){
 				case 'h': // help
 				case 'H':
-					uart_write("\nPROTO:\n+/-\tLED period\nSx/sx\tset/get Mspeed\nmx\tget steps\nXx\tstop\nPx\tpause/resume\n0..3\tmove xth motor\nN\tchange HW number\nn\tshow HW number\n");
+					uart_write("\nPROTO:\n"
+						"+/-\tLED period\n"
+						"Ex/ex\tset/get end-switches stored\n"
+						"p\tget HW end-switches\n"
+						"Sx/sx\tset/get Mspeed\n"
+						"Mx\tmove till end-switch\n"
+						"mx\tget steps\n"
+						"Xx\tstop\n"
+						"Px\tpause/resume\n"
+						"0..3\tmove xth motor\n"
+						"I\tget serial ID\n"
+						"N\tchange HW number\n"
+						"n\tshow HW number\n");
 				break;
 				case 'I': // get serial id
 					show_uid();
@@ -287,6 +301,28 @@ int main() {
 					if(paused_val < 100)  // but not less than 0.1s
 						paused_val = 500;
 				break;
+				case 'E': // set end-switches value
+					if(get_motor_number(&Num)){
+						if(readInt(&Ival) && (Ival == (Ival & 0x1f))){
+							if(Num)
+								EPs[Num] = Ival & 0x0f; // 4 bits in motors 1&2
+							else
+								EPs[0] = Ival; // all 5 bits in motor 0
+						}else
+							error_msg("bad EP");
+					}
+				break;
+				case 'e': // get stored end-switches value
+					if(get_motor_number(&Num)){
+						printUint(&EPs[Num], 1);
+					}
+				break;
+				case 'p': // get hardware end-switches value
+					if(get_motor_number(&Num)){
+						Num = get_ep_value(Num);
+						printUint(&Num, 1);
+					}
+				break;
 				case 'S': // set stepper speed
 					if(get_motor_number(&Num)){
 						if(readInt(&Ival) && Ival > MIN_STEP_LENGTH)
@@ -298,6 +334,10 @@ int main() {
 				case 's': // get stepper speed
 					if(get_motor_number(&Num))
 						printUint((U8*)&Stepper_speed[Num], 2);
+				break;
+				case 'M': // move till EP, you can call it before starting motor
+					if(get_motor_number(&Num))
+						Stop_on_EP[Num] = 1;
 				break;
 				case 'm': // how much steps there is to the end of moving
 					if(get_motor_number(&Num))

@@ -28,11 +28,17 @@
 
 extern volatile int Nsteps[];
 extern U16 Stepper_speed[];
+extern U8 EPs[];
+extern U8 Stop_on_EP[];
 
 void setup_stepper_pins();
 void set_stepper_speed(U8 N, U16 SpS);
 void move_motor(U8 N, int Steps);
 void stop_motor(U8 N);
 void pause_resume(U8 N);
+
+U8 get_ep_value(U8 N);
+
+void check_EP();
 
 #endif // __STEPPER_H__

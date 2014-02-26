@@ -46,20 +46,29 @@ INTERRUPT_HANDLER(AWU_IRQHandler, 1){}
 INTERRUPT_HANDLER(CLK_IRQHandler, 2){}
 
 // External Interrupt PORTA
-INTERRUPT_HANDLER(EXTI_PORTA_IRQHandler, 3){}
+INTERRUPT_HANDLER(EXTI_PORTA_IRQHandler, 3){
+	check_EP();
+}
 
 // External Interrupt PORTB
-INTERRUPT_HANDLER(EXTI_PORTB_IRQHandler, 4){}
+INTERRUPT_HANDLER(EXTI_PORTB_IRQHandler, 4){
+	check_EP();
+}
 
 // External Interrupt PORTC
-INTERRUPT_HANDLER(EXTI_PORTC_IRQHandler, 5){}
+INTERRUPT_HANDLER(EXTI_PORTC_IRQHandler, 5){
+	check_EP();
+}
 
 // External Interrupt PORTD
 INTERRUPT_HANDLER(EXTI_PORTD_IRQHandler, 6){
+	check_EP();
 }
 
 // External Interrupt PORTE
-INTERRUPT_HANDLER(EXTI_PORTE_IRQHandler, 7){}
+INTERRUPT_HANDLER(EXTI_PORTE_IRQHandler, 7){
+	check_EP();
+}
 
 #ifdef STM8S903
 // External Interrupt PORTF
@@ -135,13 +144,15 @@ INTERRUPT_HANDLER(UART2_RX_IRQHandler, 21){
 	U8 rb;
 	if(UART2_SR & UART_SR_RXNE){ // data received
 		rb = UART2_DR; // read received byte & clear RXNE flag
-		while(!(UART2_SR & UART_SR_TXE));
+		//while(!(UART2_SR & UART_SR_TXE));
 		// get marked byte?
 		if(UART2_CR1 & UART_CR1_R8){ // Master wanna change device?
 			if(rb != UART_devNUM){ // another device number
 				UART_is_our = 0;
+				UART2_CR2 &= ~UART_CR2_TEN; // disable transmitter
 			}else{ // our device
 				UART_is_our = 1;
+				UART2_CR2 |= UART_CR2_TEN; // enable transmitter
 				UART_send_byte('*'); // send '*' - we got the command
 			}
 			return;

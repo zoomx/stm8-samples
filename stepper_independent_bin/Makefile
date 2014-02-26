@@ -11,13 +11,12 @@ SRC=$(wildcard *.c)
 OBJ=$(SRC:%.c=%.rel)
 TRASH=$(OBJ) $(SRC:%.c=%.rst) $(SRC:%.c=%.asm) $(SRC:%.c=%.lst)
 TRASH+=$(SRC:%.c=%.sym) $(NAME).ihx $(NAME).lk $(NAME).map
-INDEPENDENT_HEADERS=../stm8l.h Makefile
+INDEPENDENT_HEADERS=../stm8l.h ports_definition.h Makefile
 
 all: $(NAME).bin
 
 $(SRC) : %.c : %.h $(INDEPENDENT_HEADERS)
 	@touch $@
-	@echo $@
 
 %.h: ;
 
