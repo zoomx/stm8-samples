@@ -77,6 +77,8 @@ void setup_stepper_pins(){
 	TIMER_CONF(IER, TIM_IER_UIE);
 	// auto-reload + interrupt on overflow
 	TIMER_CONF(CR1, TIM_CR1_APRE | TIM_CR1_URS);
+	// enable PWM output for timer1
+	TIM1_BKR |= 0x80; // MOE
 }
 
 /**
