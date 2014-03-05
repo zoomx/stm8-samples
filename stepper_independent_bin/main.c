@@ -118,7 +118,7 @@ void printUint(U8 *val, U8 len){
 	}while(Number && ch > -1);
 	uart_write((char*)&decimal_buff[ch+1]);
 }
-
+/*
 U8 U8toHEX(U8 val){
 	val &= 0x0f;
 	if(val < 10) val += '0';
@@ -135,7 +135,7 @@ void printUintHEX(U8 *val, U8 len){
 		UART_send_byte(U8toHEX(V));    // LSB
 	}
 	UART_send_byte('\n');
-}
+}*/
 
 U8 readInt(int *val){
 	unsigned long T = Global_time;
@@ -230,6 +230,9 @@ int main() {
 	unsigned long T = 0L;
 	int Ival;
 	U8 rb, Num;
+
+	CFG_GCR |= 1; // disable SWIM
+
 	// Configure clocking
 	CLK_CKDIVR = 0; // F_HSI = 16MHz, f_CPU = 16MHz
 
@@ -278,15 +281,18 @@ int main() {
 						"+/-\tLED period\n"
 						"Ex/ex\tset/get end-switches stored\n"
 						"p\tget HW end-switches\n"
+						"Mx\tstop on end-switch\n"
 						"Sx/sx\tset/get Mspeed\n"
-						"Mx\tmove till end-switch\n"
 						"mx\tget steps\n"
-						"Xx\tstop\n"
 						"Px\tpause/resume\n"
-						"0..3\tmove xth motor\n"
+						"Xx\tstop\n"
+						"0..2N\tmove xth motor for N steps\n"
+						"=\tinfinity moving (after 0..2)"
+						"U/u\tset/get U-stepping\n"
 						"I\tget serial ID\n"
 						"N\tchange HW number\n"
-						"n\tshow HW number\n");
+						"n\tshow HW number\n"
+						);
 				break;
 				case 'I': // get serial id
 					show_uid();
@@ -358,6 +364,16 @@ int main() {
 				break;
 				case 'n': // show HW num
 					printUint(&UART_devNUM, 1);
+				break;
+				case 'u': // show UStepping
+					printUint(&USteps, 1);
+				break;
+				case 'U': // set UStepping
+					if(readInt(&Ival) && Ival > 0 && Ival < 256)
+						USteps = Ival;
+				break;
+				case '=': // infinity moving: just don't decrement steps
+					StepperInfty = 1;
 				break;
 				default:
 					if(rb >= '0' && rb <= '2'){ // run motor

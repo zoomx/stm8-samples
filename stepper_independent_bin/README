@@ -21,5 +21,6 @@ or some terminal client like _com_. Another wariant is a simple client - client-
 MCU itself can print to terminal a short help about its protocol, just sent letter 'h'
 to it.
 
-!!! ALL "steps" suppose to be single pulses, you should convert them into real !!!
-!!!         steps (dividing by microstepping) in your own soft                 !!!
+You can connect up to 4 (5 for motor 0) end-point switches for each motor.
+There's an ability to move till certain EP switches value, also you can move
+motors infinitely (for now it realized only for all motors simultaneously).

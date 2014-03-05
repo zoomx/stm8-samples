@@ -27,9 +27,12 @@
 #include "main.h"
 
 extern volatile int Nsteps[];
+extern volatile int usteps[];
 extern U16 Stepper_speed[];
 extern U8 EPs[];
 extern U8 Stop_on_EP[];
+extern U8 USteps;
+extern U8 StepperInfty;
 
 void setup_stepper_pins();
 void set_stepper_speed(U8 N, U16 SpS);

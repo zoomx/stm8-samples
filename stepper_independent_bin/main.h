@@ -25,7 +25,7 @@
 extern unsigned long Global_time; // global time in ms
 
 #define UART_BUF_LEN 8			// max 7 bytes transmited in on operation
-#define MIN_STEP_LENGTH 125		// max speed == 1/(125us*16) = 500 steps per second
+#define MIN_STEP_LENGTH 9		// max speed, microseconds for one microstep
 #define THIS_DEVICE_NUM 1		// hardware number (0..255) can be changed by writting into EEPROM
 
 extern U8 UART_rx[];

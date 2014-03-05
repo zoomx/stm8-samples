@@ -23,11 +23,14 @@
 #include "stepper.h"
 
 volatile int Nsteps[3]={0,0,0}; // Number of steps
+volatile int usteps[3] = {0,0,0};// microstepping counters
 U8 Motor_number = 5;            // Number of motor to move, 5 -- not moving
 U16 Stepper_speed[3] = {1000,1000,1000};  // length of one MICROstep in us
 U8* Timers[3] = {0x5250, 0x5300, 0x5320}; // {&TIM1_CR1, &TIM2_CR1, &TIM3_CR1}
 U8 EPs[3] = {0,0,0};            // value of conditional stop-on-EP terminals status
 U8 Stop_on_EP[3] = {0,0,0};     // boolean: whether motor should freely move or stop on EPs
+U8 USteps = 16;                 // amount of microsteps on each step
+U8 StepperInfty = 0;            // infinity moving
 
 #define pause_motor(N)			*Timers[N] &= ~TIM_CR1_CEN
 #define resume_motor(N)			*Timers[N] |= TIM_CR1_CEN
@@ -43,14 +46,8 @@ U8 Stop_on_EP[3] = {0,0,0};     // boolean: whether motor should freely move or 
  */
 void setup_stepper_pins(){
 	// CLK
-/*	PPOUT(STP0_CLK_PORT, STP0_CLK_PIN);
-	PPOUT(STP1_CLK_PORT, STP1_CLK_PIN);
-	PPOUT(STP2_CLK_PORT, STP2_CLK_PIN);*/
 	SETUP_MOTOR_PORT(CLK);
 	// DIR
-	/*PPOUT(STP0_DIR_PORT, STP0_DIR_PIN);
-	PPOUT(STP1_DIR_PORT, STP1_DIR_PIN);
-	PPOUT(STP2_DIR_PORT, STP2_DIR_PIN);*/
 	SETUP_MOTOR_PORT(DIR);
 	// EN
 	SETUP_MOTOR_PORT(EN);
@@ -79,6 +76,10 @@ void setup_stepper_pins(){
 	TIMER_CONF(CR1, TIM_CR1_APRE | TIM_CR1_URS);
 	// enable PWM output for timer1
 	TIM1_BKR |= 0x80; // MOE
+	// Turn off EN
+	PORT(STP0_EN_PORT, ODR) |= STP0_EN_PIN;
+	PORT(STP1_EN_PORT, ODR) |= STP1_EN_PIN;
+	PORT(STP2_EN_PORT, ODR) |= STP2_EN_PIN;
 }
 
 /**
@@ -128,13 +129,13 @@ void move_motor(U8 N, int Steps){
 	if(Steps < 0){// dir to left
 		switch(N){
 			case 0:
-				PORT(STP0_DIR_PORT, ODR) &= ~STP0_DIR_PIN;
+				PORT(STP0_DIR_PORT, ODR) |= STP0_DIR_PIN;
 			break;
 			case 1:
-				PORT(STP1_DIR_PORT, ODR) &= ~STP1_DIR_PIN;
+				PORT(STP1_DIR_PORT, ODR) |= STP1_DIR_PIN;
 			break;
 			case 2:
-				PORT(STP2_DIR_PORT, ODR) &= ~STP2_DIR_PIN;
+				PORT(STP2_DIR_PORT, ODR) |= STP2_DIR_PIN;
 			break;
 		}
 		Steps *= -1;
@@ -142,13 +143,13 @@ void move_motor(U8 N, int Steps){
 	// turn on EN
 	switch(N){
 		case 0:
-			PORT(STP0_EN_PORT, ODR) |= STP0_EN_PIN;
+			PORT(STP0_EN_PORT, ODR) &= ~STP0_EN_PIN;
 		break;
 		case 1:
-			PORT(STP1_EN_PORT, ODR) |= STP1_EN_PIN;
+			PORT(STP1_EN_PORT, ODR) &= ~STP1_EN_PIN;
 		break;
 		case 2:
-			PORT(STP2_EN_PORT, ODR) |= STP2_EN_PIN;
+			PORT(STP2_EN_PORT, ODR) &= ~STP2_EN_PIN;
 		break;
 	}
 	Nsteps[N] = Steps;
@@ -166,19 +167,21 @@ void stop_motor(U8 N){
 	pause_motor(N);
 	switch(N){ // turn off DIR & EN
 		case 0:
-			PORT(STP0_DIR_PORT, ODR) |= STP0_DIR_PIN;
-			PORT(STP0_EN_PORT, ODR)  &= ~STP0_EN_PIN;
+			PORT(STP0_DIR_PORT, ODR) &= ~STP0_DIR_PIN;
+			PORT(STP0_EN_PORT,  ODR) |=  STP0_EN_PIN;
 		break;
 		case 1:
-			PORT(STP1_DIR_PORT, ODR) |= STP1_DIR_PIN;
-			PORT(STP1_EN_PORT, ODR)  &= ~STP1_EN_PIN;
+			PORT(STP1_DIR_PORT, ODR) &= ~STP1_DIR_PIN;
+			PORT(STP1_EN_PORT,  ODR) |=  STP1_EN_PIN;
 		break;
 		case 2:
-			PORT(STP2_DIR_PORT, ODR) |= STP2_DIR_PIN;
-			PORT(STP1_EN_PORT, ODR)  &= ~STP1_EN_PIN;
+			PORT(STP2_DIR_PORT, ODR) &= ~STP2_DIR_PIN;
+			PORT(STP2_EN_PORT,  ODR) |=  STP2_EN_PIN;
 		break;
 	}
+	StepperInfty = 0; // clear infinity flag
 	Nsteps[N] = 0;
+	usteps[N] = 0;
 	uart_write("stop");
 	printUint(&N, 1);
 }
@@ -233,7 +236,7 @@ void check_EP(){
 		if(EPs[i] == get_ep_value(i)){
 			stop_motor(i);
 			uart_write("endpoint\n");
-			Stop_on_EP[i] = 0; // reset off-condition
+		//	Stop_on_EP[i] = 0; // reset off-condition
 		}
 	}
 }

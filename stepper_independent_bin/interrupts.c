@@ -25,14 +25,18 @@
 
 #define TREG(N, R)	TIM##N##_##R
 
-#define STPR_INTR(X)					\
-	if(TREG(X, SR1) & TIM_SR1_UIF){		\
-		TREG(X, SR1) &= ~TIM_SR1_UIF;	\
-		if(Nsteps[X-1]){				\
-			if(--Nsteps[X-1] == 0){		\
-				stop_motor(X-1);		\
-			}							\
-		}								\
+#define STPR_INTR(X)						\
+	if(TREG(X, SR1) & TIM_SR1_UIF){			\
+		TREG(X, SR1) &= ~TIM_SR1_UIF;		\
+		if(Nsteps[X-1]){					\
+			if(++usteps[X-1] == USteps){	\
+				usteps[X-1] = 0;			\
+				if(!StepperInfty)			\
+				if(--Nsteps[X-1] == 0){		\
+					stop_motor(X-1);		\
+				}							\
+			}								\
+		}									\
 	}
 
 

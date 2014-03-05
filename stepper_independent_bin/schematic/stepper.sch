@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2  date Ср 26 фев 2014 17:52:34
+EESchema Schematic File Version 2  date Пн 03 мар 2014 17:27:22
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -33,13 +33,14 @@ LIBS:stm8
 LIBS:st-microelectronics
 LIBS:stm8s105k4t6c
 LIBS:stepper-cache
+LIBS:stepper-cache
 EELAYER 27 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title ""
-Date "26 feb 2014"
+Date "3 mar 2014"
 Rev ""
 Comp ""
 Comment1 ""
@@ -763,4 +764,16 @@ PB5
 Text Label 4700 7200 0    59   ~ 0
 PB4
 NoConn ~ 4150 6800
+Text Notes 1300 5050 0    59   ~ 0
+DIR\nEN\nCLK
+Text Notes 1300 5650 0    59   ~ 0
+DIR\nEN\nCLK
+Text Notes 1300 6250 0    59   ~ 0
+DIR\nEN\nCLK
+Text Notes 4150 5000 0    63   ~ 0
+4\n3\n2\n1\n0
+Text Notes 4150 5900 0    63   ~ 0
+4\n3\n2\n1\n0
+Text Notes 4150 6800 0    63   ~ 0
+4\n3\n2\n1\n0
 $EndSCHEMATC

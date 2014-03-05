@@ -289,6 +289,7 @@ int main() {
 	unsigned long T = 0L;
 	int Ival;
 	U8 rb;
+	CFG_GCR |= 1; // disable SWIM
 	// Configure clocking
 	CLK_CKDIVR = 0; // F_HSI = 16MHz, f_CPU = 16MHz
 
