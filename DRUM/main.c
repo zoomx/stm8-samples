@@ -47,7 +47,7 @@
 unsigned long Global_time = 0L, boom_start = 0L; // global time in ms
 unsigned int boom_length = 100; // length of "boom" in ms
 U16 paused_val = 500; // interval between LED flashing
-U8 snd_i = 0, bank_i = 0;  // number of sample in sound, number in sine vawe
+U8 bank_i = 0;  // number of sample in meander (even/odd)
 U8 sample_flag = 0;   // flag is set in interrupt -> next sample in sound
 
 #ifdef UART
@@ -171,6 +171,8 @@ int main() {
 	TIM4_IER = TIM_IER_UIE;
 	// auto-reload + interrupt on overflow + enable
 	TIM4_CR1 = TIM_CR1_APRE | TIM_CR1_URS | TIM_CR1_CEN;
+	// EXTI: PC1 & PC2 == "boom"
+	EXTI_CR1 = 0x10; // PCIS = 01 - rising edge only
 #ifdef UART
 	// Configure pins
 	// PC2 - PP output (on-board LED)

@@ -43,8 +43,14 @@ INTERRUPT_HANDLER(EXTI_PORTB_IRQHandler, 4){
 }
 
 // External Interrupt PORTC
-INTERRUPT_HANDLER(EXTI_PORTC_IRQHandler, 5){
-
+INTERRUPT_HANDLER(EXTI_PORTC_IRQHandler, 5){// PC1 & PC2 - boom
+	U8 P = 0;
+	if(PC_IDR & GPIO_PIN1){ // first touch sensor, 100Hz
+		change_period(10000); P = 1;
+	}else if(PC_IDR & GPIO_PIN2){ // second touch sensor, 40Hz
+		change_period(25000); P = 1;
+	}
+	if(P) play_snd();
 }
 
 // External Interrupt PORTD
@@ -54,7 +60,6 @@ INTERRUPT_HANDLER(EXTI_PORTD_IRQHandler, 6){
 
 // External Interrupt PORTE
 INTERRUPT_HANDLER(EXTI_PORTE_IRQHandler, 7){
-
 }
 
 #ifdef STM8S903

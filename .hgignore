@@ -1,0 +1,11 @@
+syntax: glob
+README.md
+.git*
+*~
+*.bak
+*.bck
+*-cache.lib
+*.kicad_pcb-bak
+*.dcm
+*.pho
+*.drl
