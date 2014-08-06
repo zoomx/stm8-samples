@@ -22,6 +22,7 @@
 #include "ports_definition.h"
 #include "main.h"
 #include "noicegen.h"
+#include "CD74HC154_LEDs.h"
 
 // Top Level Interrupt
 INTERRUPT_HANDLER(TLI_IRQHandler, 0){}
@@ -178,6 +179,7 @@ INTERRUPT_HANDLER(TIM6_UPD_OVF_TRG_IRQHandler, 23){}
 INTERRUPT_HANDLER(TIM4_UPD_OVF_IRQHandler, 23){
 	if(TIM4_SR & TIM_SR1_UIF){ // update interrupt
 		Global_time++; // increase timer
+		blink_next_LED(); // and switch to next LED
 	}
 	TIM4_SR = 0; // clear all interrupt flags
 }

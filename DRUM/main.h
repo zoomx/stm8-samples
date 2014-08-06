@@ -22,6 +22,8 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+#include "stm8l.h"
+
 extern unsigned long Global_time, boom_start; // global time in ms
 extern U8 sample_flag; // flag is set in interrupt -> next sample in sound
 extern U8 bank_i;
