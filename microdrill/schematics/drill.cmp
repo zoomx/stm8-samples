@@ -1,10 +1,17 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вс 10 авг 2014 00:37:30
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Вс 10 авг 2014 01:04:15
 
 BeginCmp
 TimeStamp = /53E68028;
 Reference = C1;
 ValeurCmp = 1u;
 IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /53E68EA1;
+Reference = D1;
+ValeurCmp = DIODESCH;
+IdModule  = D5;
 EndCmp
 
 BeginCmp
